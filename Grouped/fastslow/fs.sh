@@ -1,7 +1,4 @@
 #!/bin/bash
-# g++ -o A A.cpp
-# g++ -o B B.cpp
-# g++ -o gen gen.cpp
 for ((t=0;;t++)); do
 	printf "\r%d" $t
 	./gen >inp.txt
