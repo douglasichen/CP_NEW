@@ -4,62 +4,90 @@ using namespace std;
 #define endl '\n'
 #define ll long long
 
-const ll INF=4e18;
-ll N, Q, T[200000]={INF}, D[100000]={0}, S[100000]={0}, H, ans;
+const int TSZ=1<<17;
+ll tree[TSZ*2], lazy[TSZ*2][2], INF=1e11;
 
-void applyIncr(int P, int val) {
-	T[P]+=val;
-	if (P<N) D[P]+=val;
+ll merge(ll a, ll b) {
+	return min(a,b);
 }
 
-void build(int P) {
-	for (P>>=1; P; P>>=1) T[P]=min(T[P<<1], T[P<<1|1])+D[P];
-}
+void pushDown(int node) {
+	int left=node*2, right=node*2+1;
+	if (lazy[node][0]) {
+		if (lazy[left][1]) lazy[left][1]+=lazy[node][0];
+		else lazy[left][0]+=lazy[node][0];
 
-void pushIncr(int P) {
-	for (int h=H; h; h--) {
-		int i=P>>h;
-		applyIncr(T[i<<1], D[i]);
-		applyIncr(T[i<<1|1], D[i]);
-		D[i]=0;
+		if (lazy[right][1]) lazy[right][1]+=lazy[node][0];
+		else lazy[right][0]+=lazy[node][0];
+
+		tree[left]+=lazy[node][0];
+		tree[right]+=lazy[node][0];
 	}
+
+	if (lazy[node][1]) {
+		lazy[left][1]=lazy[node][1];
+		lazy[right][1]=lazy[node][1];
+		
+		lazy[left][0]=0;
+		lazy[right][0]=0;
+
+		tree[left]=lazy[node][1];
+		tree[right]=lazy[node][1];
+	}
+
+	lazy[node][0]=0;
+	lazy[node][1]=0;
+}
+
+ll upt(int node, int segL, int segR, int l, int r, ll val, int m) {
+	if (r<=segL || l>=segR) return tree[node];
+	if (l<=segL && segR<=r) {
+		if (m==1) {
+			if (lazy[node][1]) lazy[node][1]+=val;
+			else lazy[node][0]+=val;
+			return tree[node]+=val;
+		}
+		else {
+			lazy[node][1]=val;
+			lazy[node][0]=0;
+			return tree[node]=val;
+		}
+	}
+
+	pushDown(node);
+	int mid=segL+segR>>1;
+	return tree[node]=merge(upt(node*2, segL, mid, l, r, val, m), upt(node*2+1, mid, segR, l, r, val, m));
+}
+
+ll query(int node, int segL, int segR, int l, int r) {
+	if (r<=segL || l>=segR) return INF;
+	if (l<=segL && segR<=r) return tree[node];
+	
+	pushDown(node);
+	int mid=segL+segR>>1;
+	return merge(query(node*2, segL, mid, l, r), query(node*2+1, mid, segR, l, r));
 }
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
 
-	cin>>N>>Q;
-	H=__builtin_clz(N);
-	for (int i=0; i<N; i++) cin>>T[i+N];
-	for (int i=N-1; i; i--) T[i]=min(T[i<<1], T[i<<1|1]);
-	while (Q--) {
-		int X, L, R; cin>>X>>L>>R;
-		L+=N-1, R+=N+1;
-		if (X==3) {
-			// output answer by:
-			// push delayed operations down while setting them to 0 (they were used)
-			// query result + output
+	memset(tree, 0, sizeof(tree));
+	memset(lazy, 0, sizeof(lazy));
 
-			pushIncr(L), pushIncr(R-1);
-			ans=INF;
-			for (; L<R; L>>=1, R>>=1) {
-				if (L&1) ans=min(ans, T[L++]);
-				if (R&1) ans=min(ans, T[--R]);
-			}
-			cout << ans << endl;
+	int N,Q; cin>>N>>Q;
+	for (int i=0; i<N; i++) cin>>tree[i+TSZ];
+	for (int i=TSZ-1; i; i--) tree[i]=merge(tree[i<<1], tree[i<<1|1]);
+
+	while (Q--) {
+		int m, a, b; cin>>m>>a>>b; a--;
+		if (m==3) {
+			cout << query(1, 0, TSZ, a, b) << endl;
 		}
 		else {
-			int val; cin>>val;
-			if (X==1) {
-				// increment
-				int L0=L, R0=R;
-				for (; L<R; L>>=1, R>>=1) {
-					if (L&1) applyIncr(L++, val);
-					if (R&1) applyIncr(--R, val);
-				}
-				build(L0), build(R0-1);
-			}
+			int x; cin>>x;
+			if (m==1) upt(1, 0, TSZ, a, b, x, m);
+			else upt(1, 0, TSZ, a, b, x, m);
 		}
 	}
 }

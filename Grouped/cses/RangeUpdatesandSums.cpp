@@ -11,15 +11,70 @@ ll merge(ll a, ll b) {
 	return a+b;
 }
 
-ll upt(int node, int segL, int segR, int l, int r, int val, int mode) {
+void pushDown(int node, int segL, int mid, int segR) {
+	int left=node*2, right=node*2+1;
+
+	if (lazy[1][node]) {
+		lazy[1][left]=lazy[1][node];
+		lazy[1][right]=lazy[1][node];
+		tree[left]=lazy[1][node]*(mid-segL);
+		tree[right]=lazy[1][node]*(segR-mid);
+		
+		lazy[0][left]=0;
+		lazy[0][right]=0;
+	}
+	if (lazy[0][node]) {
+		if (lazy[1][left]) lazy[1][left]+=lazy[0][node];
+		else lazy[0][left]+=lazy[0][node];
+		
+		if (lazy[1][right]) lazy[1][right]+=lazy[0][node];
+		else lazy[0][right]+=lazy[0][node];
+
+		tree[left]+=lazy[0][node]*(mid-segL);
+		tree[right]+=lazy[0][node]*(segR-mid);
+	}
+	
+	lazy[0][node]=0;
+	lazy[1][node]=0;
+}
+
+// increase
+ll upt1(int node, int segL, int segR, int l, int r, ll val) {
 	if (r<=segL || l>=segR) return tree[node];
 	if (l<=segL && segR<=r) {
-		lazy[node]=(mode==0 ? lazy[mode][node]+val : val);
-		return tree[node]=(mode==1 ? tree[node]+val : val);
+		if (lazy[1][node]) lazy[1][node]+=val;
+		else lazy[0][node]+=val;
+		return tree[node]+=val*(segR-segL);
 	}
-	pushDown
-	int mid=segL+segR;
-	return merge(upt(node*2, segL, mid, l, r, val, mode), upt(node*2+1, mid, segR, l, r, val, mode));
+	int mid=segL+segR>>1;
+	pushDown(node, segL, mid, segR);
+	return tree[node]=merge(upt1(node*2, segL, mid, l, r, val), upt1(node*2+1, mid, segR, l, r, val));
+}
+
+ll upt2(int node, int segL, int segR, int l, int r, ll val) {
+	if (r<=segL || l>=segR) return tree[node];
+	if (l<=segL && segR<=r) {
+		lazy[1][node]=val;
+		lazy[0][node]=0;
+		return tree[node]=val*(segR-segL);
+	}
+
+	int mid=segL+segR>>1;
+	pushDown(node, segL, mid, segR);
+	return tree[node]=merge(upt2(node*2, segL, mid, l, r, val), upt2(node*2+1, mid, segR, l, r, val));
+}
+
+void printTree() {
+	// for (int i=0; i<TSZ*2; i++) cout << tree[i] << ' ';cout << endl;
+}
+
+ll query(int node, int segL, int segR, int l, int r) {
+	if (r<=segL || l>=segR) return 0;
+	if (l<=segL && segR<=r) return tree[node];
+	
+	int mid=segL+segR>>1;
+	pushDown(node, segL, mid, segR);
+	return merge(query(node*2, segL, mid, l, r), query(node*2+1, mid, segR, l, r));
 }
 
 int main() {
@@ -40,7 +95,30 @@ int main() {
 		}
 		else {
 			int x; cin>>x;
-			upt(1, 0, TSZ, a, b, x, m-1);
+			if (m==1) upt1(1, 0, TSZ, a, b, x);
+			else upt2(1, 0, TSZ, a, b, x);
+			printTree();
 		}
 	}
 }
+
+// typo
+// logic
+// diff
+
+/*
+8 12
+0 0 0 0 0 0 0 0
+2 8 8 6
+1 2 4 6
+2 5 6 8
+1 2 5 9
+2 7 8 6
+1 2 6 9
+2 8 8 7
+1 2 7 3
+2 5 8 9
+1 2 8 10
+2 8 8 1
+3 4 5
+*/

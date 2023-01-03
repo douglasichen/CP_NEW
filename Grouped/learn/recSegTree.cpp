@@ -20,24 +20,24 @@ void pushDown(int i){
     lazy[i] = 0;
 }
 
-// int query(int i, int segL, int segR, int l, int r){
-//     if(r <= segL || l >= segR) return UNIT;
-//     if(l <= segL && segR <= r) return tree[i];
-//     pushDown(i);
-//     int mid = (segL+segR)/2;
-//     return merge(query(i*2, segL, mid, l, r), query(i*2+1, mid, segR, l, r));
-// }
+int query(int i, int segL, int segR, int l, int r){
+    if(r <= segL || l >= segR) return UNIT;
+    if(l <= segL && segR <= r) return tree[i];
+    pushDown(i);
+    int mid = (segL+segR)/2;
+    return merge(query(i*2, segL, mid, l, r), query(i*2+1, mid, segR, l, r));
+}
 
-// int upd(int i, int segL, int segR, int l, int r, int v){
-//     if(r <= segL || l >= segR) return tree[i];
-//     if(l <= segL && segR <= r){
-//         lazy[i] += v;
-//         return tree[i] += v;
-//     }
-//     pushDown(i);
-//     int mid = (segL+segR)/2;
-//     return tree[i] = merge(upd(i*2, segL, mid, l, r, v), upd(i*2+1, mid, segR, l, r, v));
-// }
+int upd(int i, int segL, int segR, int l, int r, int v){
+    if(r <= segL || l >= segR) return tree[i];
+    if(l <= segL && segR <= r){
+        lazy[i] += v;
+        return tree[i] += v;
+    }
+    pushDown(i);
+    int mid = (segL+segR)/2;
+    return tree[i] = merge(upd(i*2, segL, mid, l, r, v), upd(i*2+1, mid, segR, l, r, v));
+}
 
 // int upd(int i, int segL, int segR, int L, int R, int val) {
 // 	if (L>=segR || R<=segL) return tree[i];
