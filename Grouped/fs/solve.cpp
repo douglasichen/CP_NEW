@@ -9,25 +9,23 @@ int main() {
 	cin.tie(0);
 
 	int N,Q; cin>>N>>Q;
-	ll ar[N];
-	for (int i=0; i<N; i++) cin>>ar[i];	
+	int ar[N][N];
+	char c;
+	for (int y=0; y<N; y++)
+		for (int x=0; x<N; x++)
+			cin>>c, ar[y][x]=(c=='*');	
 
-	ll sm;
 	while (Q--) {
-		int M,A,B,X; cin>>M>>A>>B; A--;
-		sm=0;
-		if (M==3) {
-			for (int i=A; i<B; i++) sm+=ar[i];
-			cout << sm << endl;
+		int m, y1, x1; cin>>m>>y1>>x1; y1--, x1--;
+		if (m==1) {
+			ar[y1][x1]^=1;
 		}
 		else {
-			cin>>X;
-			if (M==1) {
-				for (int i=A; i<B; i++) ar[i]+=X;
-			}
-			else {
-				for (int i=A; i<B; i++) ar[i]=X;
-			}
+			int y2, x2, ans=0; cin>>y2>>x2;
+			for (int y=y1; y<y2; y++)
+				for (int x=x1; x<x2; x++)
+					ans+=ar[y][x];
+			cout << ans << endl;
 		}
 	}
 }

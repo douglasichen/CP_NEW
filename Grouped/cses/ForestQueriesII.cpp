@@ -4,7 +4,7 @@ using namespace std;
 #define endl '\n'
 #define ll long long
 
-const int TSZ=1<<2;
+const int TSZ=1<<10;
 int tree[TSZ*2][TSZ*2];
 
 int merge(int a, int b) {
