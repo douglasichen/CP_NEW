@@ -2,30 +2,44 @@
 using namespace std;
 
 #define endl '\n'
+#define ll long long
+#define ms(a,x) memset(a,x,sizeof(a))
+#define SZ(x) x.size()
+
+const int TSZ=1<<20;
+ll tree[TSZ*2];
+
+ll merge(ll a, ll b) {
+	return a+b;
+}
+
+ll upt(int node, int segL, int segR, int pos, int val) {
+	if (pos<segL || pos>=segR) return tree[node];
+	if (pos==segL && pos==segR-1) return tree[node]=val;
+	int mid=segL+segR>>1;
+	return tree[node]=merge(upt(node*2, segL, mid, pos, val), upt(node*2+1, mid, segR, pos, val));
+}
+
+ll query(int node, int segL, int segR, int l, int r) {
+	if (r<=segL || l>=segR) return 0;
+	if (l<=segL && segR<=r) return tree[node];
+	int mid=segL+segR>>1;
+	return merge(query(node*2, segL, mid, l, r), query(node*2+1, mid, segR, l, r));
+}
+
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
-`
+
 	int N,Q; cin>>N>>Q;
-	vector<long long> T(N*2);
-	for (int i=0; i<N; i++) cin>>T[i+N];
-	for (int i=N-1; i>0; i--) T[i]=T[i*2]+T[i*2+1];
-	vector<long long> ans;
+	for (int i=0; i<N; i++) cin>>tree[i+TSZ];
+	for (int i=TSZ-1; i; i--) tree[i]=merge(tree[i<<1], tree[i<<1|1]);
 	for (int i=0; i<Q; i++) {
-		int x,a,b; cin>>x>>a>>b; a--;
-		if (x==1) {
-			long long dif=b-T[a+=N]; T[a]=b;
-			while (a>1) T[a>>=1]+=dif;
+		int m,a,b; cin>>m>>a>>b; a--;
+		if (m==1) {
+			upt(1,0,TSZ,a,b);
 		}
-		else {
-			long long res=0;
-			for (a+=N, b+=N; a<b; a>>=1, b>>=1) {
-				if (a&1) res+=T[a++];
-				if (b&1) res+=T[--b];
-			}
-			ans.push_back(res);
-		}
+		else cout << query(1,0,TSZ,a,b) << endl;
 	}
-	for (long long i : ans) cout << i << endl;
 }
