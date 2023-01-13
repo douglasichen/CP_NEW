@@ -13,7 +13,7 @@ int ar[2][MAXN][MAXN];
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
-
+	
 	int N,K; cin>>N>>K;
 	for (int y=0; y<N; y++)
 		for (int x=0; x<y+1; x++)
