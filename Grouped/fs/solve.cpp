@@ -1,49 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+typedef long long ll;
+
 #define endl '\n'
+#define ms(a,x) memset(a,x,sizeof(a))
+#define SZ(x) int(x.size())
 
-void solve() {
-
-}
+const int TSZ=1<<20;
+ll ar[TSZ], dp[TSZ];
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
+	
+	ms(ar,0);
+	ms(dp,0);
 
-	int T; cin>>T;
-	while (T--) {
-		string S, s; cin>>S; 
-		while (S.size() && S[0]=='0') S.erase(S.begin());	
-		s=S;
-		cout << s << endl;
-
-		while (s.size()>2) {
-			int N=s.size();
-
-			// s = s - dig
-			if (s[N-1]<=s[N-2]) s[N-2]=s[N-2]-s[N-1]+'0';
-			else {
-				s[N-2]=s[N-2]+10-s[N-1]+'0';
-				for (int i=N-3; i>=0; i--) {
-					if (s[i]=='0') s[i]='9';
-					else {
-						s[i]--;
-						break;
-					}
-				}
-			}
-			
-			
-			s.pop_back();
-
-			// print
-			while (s.size() && s[0]=='0') s.erase(s.begin());
-			
-			cout << s << endl;
+	int N,K; cin>>N>>K;
+	for (int i=1; i<=N; i++) cin>>ar[i];
+	
+	for (int i=1; i<=N; i++) {
+		int L=max(0,i-K), R=(i-1)/K*K;
+		ll mx=0;
+		for (int a=i; a>R; a--) mx=max(mx, ar[a]);
+		for (int a=R; a>=L; a--) {
+			dp[i]=max(dp[i], dp[a]+mx);
+			mx=max(mx,ar[a]);
 		}
-		if (stoi(s)%11==0) cout << "The number " << S << " is divisible by 11.\n";
-		else cout << "The number " << S << " is not divisible by 11.\n";
-		cout << (T ? "\n" : "");
-	}	
+	}
+
+
+	for (int i=1; i<=N; i++) cout << dp[i] << ' '; cout << endl;
+	cout << dp[N] << endl;
 }
+
+/*
+8 3
+5 3 8 3 8 8 5 6 
+
+*/
