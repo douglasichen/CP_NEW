@@ -52,6 +52,7 @@ int main() {
 		}
 	}
 
+    // D!=0
 	ll mstCost=0, mnCost;
 	for (int i=0; i<M; i++)
 		if (used2[i])
@@ -70,10 +71,12 @@ int main() {
 			break;
 		}
 	}
-	if (SZ(G[start])) fromCost[start]=G[start][0][0];
+	if (SZ(G[start])) fromCost[start]=G[start][0][0], from[start]=G[start][0][1];
 
 	// dfs to build fromCost
 	ms(vis,0);
+    ms(from,0);
+    ms(fromCost,0);
 	vis[start]=1;
 	stack<int> st; st.push(start);
 	while (SZ(st)) {
@@ -94,12 +97,13 @@ int main() {
 		if (!used2[i]) {
 			vector<int> e={edges[i][0], edges[i][1], edges[i][2]};
 			newMstCost=mstCost+max(0,e[2]-D) - max(fromCost[e[0]], fromCost[e[1]]);
-			if (newMstCost<mstCost) {
-				mstCost=newMstCost;
-				best=i;
-			}
+			// if (newMstCost<mnCost) {
+			// 	mnCost=newMstCost;
+			// 	best=i;
+			// }
 		}
 	}
+
 
 	if (best!=-1) {
 		vector<int> e={edges[best][0], edges[best][1]};
@@ -115,7 +119,7 @@ int main() {
 				used2[i]=0;
 		
 		used2[best]=1;
-	}
+	}  
 
 	for (int i=0; i<M; i++) used[i]^=used2[i];
 	cout << (accumulate(used,used+M,0)+1)/2 << endl;
