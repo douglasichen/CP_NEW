@@ -5,12 +5,10 @@ int main(int argt, char ** args) {
 
 	srand(time(NULL));
 	
-	const int MAXN=7;	
-	int N=rand()%MAXN+3, C=rand()%3+N;
+	const int MAXN=20;
+	int N=MAXN, K=rand()%(N-1)+1;
+	cout << N << " " << K << "\n";
 
-	cout << N << " " << C << endl;
-	for (int i=0; i<N; i++)
-		cout << rand()%C << ' ';
+	for (int i=0; i<N; i++) cout << rand()%MAXN+1 << ' ';
 	cout << endl;
-
 }

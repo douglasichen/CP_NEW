@@ -7,25 +7,38 @@ typedef long long ll;
 #define ms(a,x) memset(a,x,sizeof(a))
 #define SZ(x) int(x.size())
 
-const int MAXN=200;
-int ar[MAXN];
+struct Node {
+	ll x=0, y=0;
+};
+
+const int TSZ=1<<20;
+ll ar[TSZ], dp[TSZ];
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
+	
+	ms(ar,0);
+	ms(dp,0);
 
-	int N,C; cin>>N>>C;
-	for (int i=0; i<N; i++) cin>>ar[i];
-	ll ans=0;
-	for (int a=0; a<N; a++) {
-		for (int b=a+1; b<N; b++) {
-			for (int c=b+1; c<N; c++) {
-				vector<int> v={ar[a],ar[b],ar[c]};
-				sort(v.begin(), v.end());
-				int x=max({v[1]-v[0], v[2]-v[1], v[0]+C-v[2]});
-				if (x<(C+1)/2) ans++;
-			}
+	int N,K; cin>>N>>K;
+	for (int i=1; i<=N; i++) cin>>ar[i];
+	
+	for (int i=1; i<=N; i++) {
+		int L=max(0,i-K), R=(i-1)/K*K;
+		ll mx=0;
+		for (int a=i; a>R; a--) mx=max(mx, ar[a]);
+		for (int a=R; a>=L; a--) {
+			dp[i]=max(dp[i], dp[a]+mx);
+			mx=max(mx,ar[a]);
 		}
 	}
-	cout << ans << endl;
+
+	// for (int i=1; i<=N; i++) cout << dp[i] << ' '; cout << endl;
+	cout << dp[N] << endl;
 }
+
+/*
+7 4
+6 4 8 9 3 2 4 
+*/
