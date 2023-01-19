@@ -7,6 +7,7 @@ typedef long long ll;
 #define ms(a,x) memset(a,x,sizeof(a))
 #define SZ(x) int(x.size())
 
+<<<<<<< HEAD
 struct Node {
 	ll x=0, y=0, sm=0;
 };
@@ -100,10 +101,15 @@ Node query(int node, int segL, int segR, int l, int r) {
 	int mid=segL+segR>>1;
 	return merge(query(node*2, segL, mid, l, r), query(node*2+1, mid, segR, l, r), tree[node].y);
 }
+=======
+const int MAXN=1e6;
+ll ar[MAXN];
+>>>>>>> bf4a286ae018ece9f90054e7bfc406e9865d112d
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
+<<<<<<< HEAD
 	
 	ms(ar,0);
 	ms(dp,0);
@@ -156,3 +162,21 @@ wanted output:
 10
 
 */
+=======
+
+	int N,K; cin>>N>>K;
+	for (int i=0; i<N; i++) cin>>ar[i];
+	
+	ll ans=0;
+	stack<ll> a,b;
+	for (int i=N-1; i>=0; i--) b.push(i==N-1 ? ar[i] : max(b.top(), ar[i]));
+	for (int i=0; i<N; i++) {
+		a.push(i==0 ? ar[i] : max(a.top(), ar[i])), b.pop();
+		if (!SZ(a) || !SZ(b)) continue;
+		if (i+1<=K && N-i-1<=K) ans=max(ans,a.top()+b.top());
+	}
+	if (K==N) ans=*max_element(ar,ar+N);
+	cout << ans << endl;
+
+}
+>>>>>>> bf4a286ae018ece9f90054e7bfc406e9865d112d

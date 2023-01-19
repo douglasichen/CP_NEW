@@ -7,8 +7,13 @@ typedef long long ll;
 #define ms(a,x) memset(a,x,sizeof(a))
 #define SZ(x) int(x.size())
 
+<<<<<<< HEAD
 const int TSZ=1<<20;
 ll ar[TSZ], dp[TSZ];
+=======
+const int MAXN=200;
+int ar[MAXN];
+>>>>>>> bf4a286ae018ece9f90054e7bfc406e9865d112d
 
 int main() {
 	cin.sync_with_stdio(0);
@@ -17,6 +22,7 @@ int main() {
 	ms(ar,0);
 	ms(dp,0);
 
+<<<<<<< HEAD
 	int N,K; cin>>N>>K;
 	for (int i=1; i<=N; i++) cin>>ar[i];
 	
@@ -40,3 +46,20 @@ int main() {
 5 3 8 3 8 8 5 6 
 
 */
+=======
+	int N,C; cin>>N>>C;
+	for (int i=0; i<N; i++) cin>>ar[i];
+	ll ans=0;
+	for (int a=0; a<N; a++) {
+		for (int b=a+1; b<N; b++) {
+			for (int c=b+1; c<N; c++) {
+				vector<int> v={ar[a],ar[b],ar[c]};
+				sort(v.begin(), v.end());
+				int x=max({v[1]-v[0], v[2]-v[1], v[0]+C-v[2]});
+				if (x<(C+1)/2) ans++;
+			}
+		}
+	}
+	cout << ans << endl;
+}
+>>>>>>> bf4a286ae018ece9f90054e7bfc406e9865d112d

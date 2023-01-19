@@ -1,35 +1,48 @@
 #include <bits/stdc++.h>
 using namespace std;
+
+typedef long long ll;
+
 #define endl '\n'
+#define ms(a,x) memset(a,x,sizeof(a))
+#define SZ(x) x.size()
+
+const int MAXN=1000;
+vector<int> A[MAXN], B[MAXN];
+int N, M;
 
 int main() {
-    cin.sync_with_stdio(0);
-    cin.tie(0);
+	cin.sync_with_stdio(0);
+	cin.tie(0);
 
-    int N; cin>>N;
-    vector<vector<int>> A(N, vector<int>(3));
-    for (int i=0; i<N; i++) cin>>A[i][0]>>A[i][1]>>A[i][2];
-    int M; cin>>M;
-    vector<vector<int>> B(M, vector<int>(3));
-    for (int i=0; i<M; i++) cin>>B[i][0]>>B[i][1]>>B[i][2];
-    for (vector<int> &v : A) sort(v.begin(), v.end());
-    for (vector<int> &v : B) sort(v.begin(), v.end());
-    auto srt=[](vector<int> a, vector<int> b) {
-        return a[0]*a[1]*a[2]<b[0]*b[1]*b[2];
-    };
-    sort(A.begin(), A.end(), srt);
-    // sort(B.begin(), B.end(), srt);
-    for (int j=0; j<M; j++) {
-        int box=-1;
-        for (int i=0; i<N; i++) {
-            vector<int> a=A[i], b=B[j];
-            // int areaA=a[0]*a[1]*a[2], areaB=b[0]*b[1]*b[2];
-            if (b[0]<=a[0] && b[1]<=a[1] && b[2]<=a[2]) {
-                box=i;
-                break;
-            }
-        }
-        if (box==-1) cout << "Item does not fit." << endl;
-        else cout << A[box][0]*A[box][1]*A[box][2] << endl;
-    }
+	fill(A,A+MAXN,vector<int>{0,0,0});
+	fill(B,B+MAXN,vector<int>{0,0,0});
+
+	cin>>N;
+	for (int i=0; i<N; i++) {
+		cin>>A[i][0]>>A[i][1]>>A[i][2];
+		sort(A[i].begin(),A[i].end());
+	}
+	auto srt=[](vector<int> a, vector<int> b) {
+		return a[0]*a[1]*a[2]<b[0]*b[1]*b[2];
+	};
+	sort(A,A+N,srt);
+	
+	cin>>M;
+	for (int i=0; i<M; i++) {
+		cin>>B[i][0]>>B[i][1]>>B[i][2];
+		sort(B[i].begin(),B[i].end());
+	}
+
+	for (int b=0; b<M; b++) {
+		int ans=0;
+		for (int a=0; a<N; a++) {
+			if (B[b][0]<=A[a][0] && B[b][1]<=A[a][1] && B[b][2]<=A[a][2]) {
+				ans=A[a][0]*A[a][1]*A[a][2];
+				break;
+			}
+		}
+		if (ans) cout << ans << endl;
+		else cout << "Item does not fit." << endl;
+	}
 }
