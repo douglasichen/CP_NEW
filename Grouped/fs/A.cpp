@@ -32,30 +32,31 @@ int main() {
 	}
 
 	for (int x=0; x<N; x++) {
-		int hit=0, a;
+		int hit=0,a;
 		for (int y=1; y<=M; y++) {			
 			a=y-down[x];
-			if (a>0 && !no[x+1][a]) dp[x+1][a]=min(dp[x+1][a], dp[x][y]);
+			if (a>0 && !no[x+1][a] && !no[x][y]) dp[x+1][a]=min(dp[x+1][a], dp[x][y]);
 			
 			a=min(M,y+up[x]);
 			if (!no[x+1][a]) dp[x+1][a]=min(dp[x+1][a], dp[x][y]+1);
 			dp[x][a]=min(dp[x][a], dp[x][y]+1);
 
-			if (dp[x][y]<INF && !no[x][y]) hit=1;
+			if (dp[x][y]<INF) hit=1;
 		}
+		
 		if (hit==0) break;
 		if (has[x]) ans2++;
 	}
 
 	// for (int i=0; i<N; i++) cout << has[i] << ' '; cout << endl;
 
-	// for (int y=M; y; y--)
-	// 	for (int x=0; x<=N; x++)
-	// 		cout << dp[x][y] << (x==N ? "\n" : " ");
+	for (int y=M; y; y--)
+		for (int x=0; x<=N; x++)
+			cout << (dp[x][y]==INF ? "x" : to_string(dp[x][y])) << (x==N ? "\n" : " ");
 
-	// for (int y=M; y; y--) 
-	// 	for (int x=0; x<=N; x++)
-	// 		cout << no[x][y] << (x==N ? "\n" : " ");
+	for (int y=M; y; y--) 
+		for (int x=0; x<=N; x++)
+			cout << no[x][y] << (x==N ? "\n" : " ");
 
 
 	for (int y=1; y<=M; y++) ans=min(ans, dp[N][y]);
