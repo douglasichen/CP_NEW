@@ -1,43 +1,41 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 
 typedef long long ll;
-#define endl '\n'
 #define SZ(a) int(a.size())
+#define endl '\n'
 #define ms(a,b) memset(a,b,sizeof(a))
-#define pii pair<ll,ll>
-
-const int MAXN=11;
-ll ar[MAXN];
 
 
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
 
-	int T; cin>>T;
-	while (T--) {
-		int N; cin>>N;
-		for (int i=1; i<=N; i++) cin>>ar[i];
-		ar[0]=0;
-		
-		vector<vector<pair<ll,ll>>> dp(N+1);
-		dp[1].push_back({ar[1],ar[1]});
+	int N,M; cin>>N>>M;
+	vector<int> ar(N);
+	for (int i=0; i<N; i++) cin>>ar[i];
+	sort(ar.begin(), ar.end());
 
-		for (int i=2; i<=N; i++) {
-			for (pii ran : dp[i-1]) {
-				dp[i].push_back({min(ran.first,ar[i]), max(ran.second,ar[i])});
-			}
 
-			if (i==2) dp[i].push_back({ar[i]+ar[i-1],ar[i]+ar[i-1]});
-			for (pii ran : dp[i-2]) {
-				dp[i].push_back({min(ran.first,ar[i]+ar[i-1]), max(ran.second,ar[i]+ar[i-1])});
-			}
-		}
-
-		ll ans=LLONG_MAX;
-		for (pii p : dp[N]) ans=min(ans, ll(p.second-p.first));
-		cout << ans << endl;
+	vector<int> V, P;
+	V.push_back(-1); // h, psa
+	for (int i=0; i<N; i++) {
+		V.push_back(ar[i]);
 	}
 
+	for (int m=0; m<M; m++) {
+		char c; int a,b; cin>>c>>a>>b;
+		if (c=='F') {
+			for (int &h : V) {
+				if (a==0) break;
+				if (h>=b) h++, a--;
+			}
+			sort(V.begin(),V.end());
+		}
+		else {
+			auto y=upper_bound(V.begin(), V.end(), b); y--;
+			auto x=lower_bound(V.begin(), V.end(), a);
+			cout << (y-x) << endl;
+		}
+	}
 }
