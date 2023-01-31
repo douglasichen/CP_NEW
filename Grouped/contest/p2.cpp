@@ -6,18 +6,27 @@ typedef long long ll;
 #define endl '\n'
 #define ms(a,b) memset(a,b,sizeof(a))
 
-const int MAXN=;
-int A[MAXN], B[MAXn];
-
-const int MAXN=1e6+1, MAXA=4e6+2, P=2e6;
-int A[MAXN], B[MAXN], X[MAXN], Y[MAXN];
-vector<bool> ma[MAXA];
-bitset<MAXA> vis;
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
 
-	int N; cin>>N;
-	for (int i=0; i<N; i++) cin>>arA[i];
-	for (int i=0; i<N; i++) cin>>arB[i];
+	int T; cin>>T;
+	ll N,S,a,b,dif;
+	while (T--) {
+		cin>>N>>S;
+		a=1;
+		b=N*(N+1)/2-S-1;
+		if (b<0) cout << 0 << endl;
+		else {
+			if (b>N) {
+				dif=b-N;
+				a+=dif;
+				b-=dif;
+				if (a<=b) cout << (b-a+1)/2 << endl;
+				else cout << 0 << endl;
+			}
+			else cout << (b-a+1)/2 << endl;
+				
+		}
+	}
 }

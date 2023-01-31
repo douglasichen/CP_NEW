@@ -11,21 +11,21 @@ int main() {
 	cin.tie(0);
 
 	int T; cin>>T;
-	ll N,S;
-	// while (T--) {
-	// 	cin>>N>>S;
-	// 	cout << max(0LL,(N*(N+1)/2-S-1)/2) << endl;
-	// }
-
-	ll ans;
+	ll N,S,a,b,dif;
 	while (T--) {
 		cin>>N>>S;
-		ans=0;
-		for (int a=1; a<=N; a++) {
-			for (int b=a+1; b<=N; b++) {
-				if (N*(N+1)/2-a-b==S) ans++;
+		a=1;
+		b=N*(N+1)/2-S-1;
+		if (b<0) cout << 0 << endl;
+		else {
+			if (b>N) {
+				dif=b-N;
+				a+=dif;
+				b-=dif;
+				if (a<=b) cout << (b-a+1)/2 << endl;
+				else cout << 0 << endl;
 			}
+			else cout << (b-a+1)/2 << endl;
 		}
-		cout << ans << endl;
 	}
 }
