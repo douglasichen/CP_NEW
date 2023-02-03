@@ -13,8 +13,15 @@ int main() {
 
 	srand(time(0));
 
-	int T=1, mx=1000, mx2=100000;
-	cout << T << endl;
-	int N=rand()%mx+1, S=rand()%(N*(N+1)/2)+10;
-	cout << N << " " << S << endl;
+	int N=10, M=(N-1)*2, MAXD=2;
+	int D=rand()%MAXD+1, A=D;
+	cout << N << " " << M << " " << D << endl;
+	for (int i=2; i<=N; i++) {
+		int a=i, b=rand()%(i-1)+1, c=rand()%A+1;
+		cout << a << ' ' << b << ' ' << c << endl;
+	}
+	for (int i=2; i<=N; i++) {
+		int a=i, b=rand()%(i-1)+1, c=rand()%A+1;
+		cout << a << ' ' << b << ' ' << c << endl;
+	}
 }

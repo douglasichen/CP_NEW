@@ -7,16 +7,17 @@ typedef long long ll;
 #define ms(a,x) memset(a,x,sizeof(a))
 #define SZ(x) int(x.size())
 
-const int MAXN=1e5+1, MAXM=2e5;
-int edges[MAXM][3], order[MAXM], used[MAXM], used2[MAXM], dsu[MAXN], fromCost[MAXN], from[MAXN];
-bool vis[MAXN];
-vector<vector<int>> G[MAXN];
+const int MAX_N=1e5+1, MAX_M=2e5+1, E=19;
+int ord[MAX_M], dsu[MAX_N], anc[E][MAX_N], mx[E][MAX_N], lev[MAX_N], on[MAX_M], mstUse[MAX_M];
+int N, M, D;
+vector<ll> edges[MAX_M];
+vector<vector<ll>> mst[MAX_N];
 
 int root(int a) {
-	return (dsu[a]<0 ? a : dsu[a]=root(dsu[a]));
+	return dsu[a]<0 ? a : dsu[a]=root(dsu[a]);
 }
 
-bool unify(int a, int b) {
+bool unite(int a, int b) {
 	a=root(a), b=root(b);
 	if (a==b) return 0;
 	if (dsu[a]>dsu[b]) swap(a,b);
@@ -25,102 +26,170 @@ bool unify(int a, int b) {
 	return 1;
 }
 
+bool comp(vector<ll> a, vector<ll> b) {
+	if (a[0]<b[0]) return 1;
+	if (a[0]==b[0] && a[1]<b[1]) return 1;
+	return 0;
+}
+
+int bigger(int a, int b) {
+	if (edges[a][0]==edges[b][0]) return (on[a]<on[b] ? a : b);
+	return (edges[a][0]>edges[b][0] ? a : b);
+}
+
+int getLca(int a, int b) {
+	if (lev[a]<lev[b]) swap(a,b);
+	for (int e=E-1; e>=0; e--) if (lev[anc[e][a]]>=lev[b]) a=anc[e][a];
+	for (int e=E-1; e>=0; e--) if (anc[e][a]!=anc[e][b]) a=anc[e][a], b=anc[e][b];
+	return (a==b ? a : anc[0][a]);
+}
+
+int getMaxEdge(int a, int b) {
+	int lca=getLca(a,b), res=M;
+	for (int e=E-1; e>=0; e--) {
+		if (lev[anc[e][a]]>=lev[lca]) {
+			res=bigger(mx[e][a], res);
+			a=anc[e][a];
+		}
+	}
+	for (int e=E-1; e>=0; e--) {
+		if (lev[anc[e][b]]>=lev[lca]) {
+			res=bigger(mx[e][b], res);
+			b=anc[e][b];
+		}
+	}
+	return res;
+}
+
+void build(int node, int from, int fromEdge, int l) {
+	anc[0][node]=from;
+	mx[0][node]=fromEdge;
+	lev[node]=l;
+	for (int e=1; e<E; e++) {
+		anc[e][node]=anc[e-1][anc[e-1][node]];
+		mx[e][node]=bigger(mx[e-1][node], mx[e-1][anc[e-1][node]]);
+	}
+	for (vector<ll> child : mst[node]) if (child[1]!=from) build(child[1], node, child[2], l+1);
+}
+
+void printAnc() {
+	cout << "anc:" << endl;
+	for (int e=0; e<=3; e++) {
+		cout << e << ": ";
+		for (int i=1; i<=N; i++) {
+			cout << anc[e][i] << ' ';
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+void printMst() {
+	vector<vector<ll>> ed;
+	queue<ll> qu;
+	vector<bool> vis(N+1);
+	qu.push(1);
+	vis[1]=1;
+	while (SZ(qu)) {
+		int node=qu.front(); qu.pop();
+		for (vector<ll> child : mst[node]) {
+			if (!vis[child[1]]) {
+				vis[child[1]]=1;
+				qu.push(child[1]);
+				ed.push_back({node,child[1],child[0]});
+			}
+		}
+	}
+	for (vector<ll> e : ed) {
+		cout << e[0] << ' ' << e[1] << ' ' << e[2] << endl;
+	}
+} 
+
+void printMx() {
+	cout << "mx:" << endl;
+	for (int e=0; e<=3; e++) {
+		for (int i=1; i<=N; i++) {
+			cout << mx[e][i] << ' ';
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
 int main() {
 	cin.sync_with_stdio(0);
 	cin.tie(0);
 
-	fill(dsu,dsu+MAXN,-1);
-	ms(used,0);
-	ms(used2,0);
+	ms(on,0);
+	ms(mstUse,0);
+	fill(dsu,dsu+MAX_N,-1);
 
-	int N,M,D; cin>>N>>M>>D;
+	cin>>N>>M>>D;
+	edges[M]={0,0,0,0};
 	for (int i=0; i<M; i++) {
-		cin>>edges[i][0]>>edges[i][1]>>edges[i][2];
-		if (i<N-1) used[i]=1;
+		if (i<N-1) on[i]=1;
+		int a,b,c; cin>>a>>b>>c;
+		edges[i]={c,-on[i],a,b};
 	}
-	iota(order,order+M,0);
-	sort(order,order+M,[&](int a, int b){
-		if (edges[a][2]==edges[b][2]) return used[a]>used[b];
-		return edges[a][2]<edges[b][2];
-	});
+	iota(ord, ord+M, 0);
+	sort(ord, ord+M, [&](int a, int b) {return comp(edges[a], edges[b]); });
+
+	ll mstCost=0;
+	for (int o=0; o<M; o++) {
+		int i=ord[o];
+		if (unite(edges[i][2], edges[i][3])) {
+			mstCost+=edges[i][0];
+			mstUse[i]=1;
+
+			mst[edges[i][2]].push_back({edges[i][0], edges[i][3], i});
+			mst[edges[i][3]].push_back({edges[i][0], edges[i][2], i});
+		}
+	}
+
+	build(1, 1, M, 0);
+	// printAnc();
+	// printMx();
+	// printMst();
+
+	vector<ll> best={mstCost, 0, M, M}; // treeCost, change, edge, remEdge.
 	for (int i=0; i<M; i++) {
-		int ind=order[i];
-		if (unify(edges[ind][0], edges[ind][1])) {
-			G[edges[ind][0]].push_back({edges[ind][2], edges[ind][1]});
-			G[edges[ind][1]].push_back({edges[ind][2], edges[ind][0]});
-			used2[ind]=1;
+		if (mstUse[i]) {
+			vector<ll> nw={mstCost-edges[i][0]+max(edges[i][0]-D, 0LL), 0LL, i, M};
+			if (comp(nw,best)) best=nw;
+		}
+		else {
+			int mxEdge=getMaxEdge(edges[i][2], edges[i][3]);
+			ll cost=mstCost-edges[mxEdge][0]+max(0LL, edges[i][0]-D);
+			vector<ll> nw={cost, on[mxEdge]-on[i], i, mxEdge};
+			if (comp(nw,best)) best=nw;
 		}
 	}
+	mstUse[best[2]]=1;
+	mstUse[best[3]]=0;
 
-    // D!=0
-	ll mstCost=0, mnCost;
-	for (int i=0; i<M; i++)
-		if (used2[i])
-			mstCost+=edges[i][2];
-	
-	mnCost=mstCost;
-	for (int i=0; i<M; i++)
-		if (used2[i])
-			mnCost=min(mnCost, mstCost-(edges[i][2]-max(0,edges[i][2]-D)));
-
-	// create fromCost
-	int start=1;
-	for (int i=1; i<=N; i++) {
-		if (SZ(G[i])<=1) {
-			start=i;
-			break;
-		}
-	}
-	if (SZ(G[start])) fromCost[start]=G[start][0][0], from[start]=G[start][0][1];
-
-	// dfs to build fromCost
-	ms(vis,0);
-    ms(from,0);
-    ms(fromCost,0);
-	vis[start]=1;
-	stack<int> st; st.push(start);
-	while (SZ(st)) {
-		int node=st.top(); st.pop();
-		for (vector<int> child : G[node]) {
-			if (!vis[child[1]]) {
-				vis[child[1]]=1;
-				fromCost[child[1]]=child[0];
-				from[child[1]]=node;
-				st.push(child[1]);
-			}
-		}
-	}
-
-	int best=-1;
-	ll newMstCost;
-	for (int i=0; i<M; i++) {
-		if (!used2[i]) {
-			vector<int> e={edges[i][0], edges[i][1], edges[i][2]};
-			newMstCost=mstCost+max(0,e[2]-D) - max(fromCost[e[0]], fromCost[e[1]]);
-			// if (newMstCost<mnCost) {
-			// 	mnCost=newMstCost;
-			// 	best=i;
-			// }
-		}
-	}
-
-
-	if (best!=-1) {
-		vector<int> e={edges[best][0], edges[best][1]};
-
-		int a=e[0], b=from[e[0]];
-		for (int i=0; i<M; i++) 
-			if (edges[i][0]==a && edges[i][1]==b || edges[i][1]==a && edges[i][0]==b)
-				used2[i]=0;
-
-		a=e[1], b=from[e[1]];
-		for (int i=0; i<M; i++) 
-			if (edges[i][0]==a && edges[i][1]==b || edges[i][1]==a && edges[i][0]==b)
-				used2[i]=0;
-		
-		used2[best]=1;
-	}  
-
-	for (int i=0; i<M; i++) used[i]^=used2[i];
-	cout << (accumulate(used,used+M,0)+1)/2 << endl;
+	ll ans=0;
+	for (int i=0; i<M; i++) ans+=(on[i]^mstUse[i]);
+	cout << (ans+1)/2 << endl;
 }
+
+/*
+10 18 2
+2 1 2
+3 1 1
+4 3 2
+5 3 1
+6 1 1
+7 2 1
+8 1 1
+9 1 1
+10 6 1
+2 1 1
+3 1 2
+4 3 2
+5 2 2
+6 1 2
+7 6 1
+8 4 1
+9 7 2
+10 4 1
+*/
