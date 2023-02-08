@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 for ((t=0;;t++)); do
 	printf "\r%d" $t
 	./gen >data/inp.txt

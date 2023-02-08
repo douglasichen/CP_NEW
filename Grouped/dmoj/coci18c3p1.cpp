@@ -4,9 +4,8 @@ using namespace std;
 typedef long long ll;
 
 #define endl '\n'
-#define ll long long
-#define ms(a,x) memset(a,x,sizeof(a))
-#define SZ(x) x.size()
+#define SZ(a) int(a.size())
+#define ms(a,b) memset(a,b,sizeof(a))
 
 int main() {
 	cin.sync_with_stdio(0);
