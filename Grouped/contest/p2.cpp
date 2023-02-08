@@ -4,41 +4,38 @@ using namespace std;
 #define endl '\n'
 #define ll long long
 #define ms(a,x) memset(a,x,sizeof(a))
-#define SZ(x) int(x.size())
+#define SZ(x) x.size()
 
-const int MAXN=1e6+1, MAXA=4e6+2, P=2e6;
-int A[MAXN], B[MAXN], X[MAXN], Y[MAXN];
-vector<bool> ma[MAXA];
-bitset<MAXA> vis;
+const int MAXN=1e5;
+string same[MAXN][2], diff[MAXN][2];
+map<string,map<string,bool>>  in;
+
 int main() {
     cin.sync_with_stdio(0);
     cin.tie(0);
-    
-    int N,K; cin>>N>>K;
-    vector<int> op;
-    for (int i=0,a; i<N; i++) {
-        cin>>a;
-        ma[a+P].push_back(1);
-        if (!vis[a+P]) op.push_back(a+P), vis[a+P]=1;
-        if (K) {
-            ma[a+K+P].push_back(0);
-            if (!vis[a+K+P])
-                op.push_back(a+K+P),
-                vis[a+K+P]=1;
+
+    int X; cin>>X;
+    for (int i=0; i<X; i++) {
+        cin>>same[i][0]>>same[i][1];
+    }
+    int Y; cin>>Y;
+    for (int i=0; i<Y; i++) {
+        cin>>diff[i][0]>>diff[i][1];
+    }
+    int G; cin>>G;
+    for (int i=0; i<G; i++) {
+        vector<string> v(3);
+        for (int o=0; o<3; o++) cin>>v[o];
+        for (int a=0; a<3; a++) {
+            for (int b=0; b<3; b++) {
+                if (a!=b) {
+                    in[v[a]][v[b]]=1;
+                }
+            }
         }
     }
-
     int ans=0;
-    for (int e : op) {
-        for (int i=1; i<=SZ(ma[e]); i++) {
-            A[i]=A[i-1]+(ma[e][i-1]==0);
-            B[i]=B[i-1]+(ma[e][i-1]==1);
-        }
-        for (int i=0; i<=SZ(ma[e]); i++) X[i]=A[i]-B[i], Y[i]=B[i]-A[i];
-
-        for (int i=1; i<=SZ(ma[e]); i++) Y[i]=max(Y[i], Y[i-1]);
-        for (int i=SZ(ma[e])-1; i>=0; i--) X[i]=max(X[i], X[i+1]);
-        for (int i=0; i<SZ(ma[e]); i++) ans=max(ans, Y[i]+X[i]+B[SZ(ma[e])]);
+    for (int i=0; i<X; i++) {
+        
     }
-    cout << ans << endl;
 }
