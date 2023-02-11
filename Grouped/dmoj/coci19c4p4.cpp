@@ -1,7 +1,8 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 typedef long long ll;
+
 #define endl '\n'
 #define SZ(a) int(a.size())
 #define ms(a,b) memset(a,b,sizeof(a))
